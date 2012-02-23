@@ -29,6 +29,7 @@
     		'cancelLabel':'Cancel',
     		'ajax':false,
     		'ajaxOptions': {
+    			'context': null,
     		}
     	},
     	'button': {
@@ -61,16 +62,16 @@
 			d.buttons = {};
 				
 			if (this.options.form.ajax) {
+				if (!self.options.form.ajaxOptions.context) {
+					self.options.form.ajaxOptions.context = $("#"+ self.options.dialog.id);
+				}
 				$("#"+self.options.form.id).live('submit', function(){
 					$("#"+self.options.form.id).dialog("close");
 					self.options.form.ajaxOptions.success = function(result) {
 						if (result.formError) {
 							$("#"+ self.options.dialog.id).data('popup-error', result.formError);
 							$("#"+ self.options.dialog.id).dialog("open");
-							console.log("hiiiiiii");
 						}
-						
-						
 					}
 					$(this).ajaxSubmit(self.options.form.ajaxOptions);
 					return false;
