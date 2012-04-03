@@ -1,4 +1,9 @@
-/* jQuery Smart Dialog
+/* jQuery smartDialog Widget 1.0 by Jacob Morrison
+ * http://projects.ofjacob.com
+ *
+ * Dual licensed under the MIT and GPL licenses:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *   http://www.gnu.org/licenses/gpl.html
 */
 (function($){
 
@@ -19,6 +24,7 @@
     			'loadOnce':false,
     			'loadingMessage': 'Loading...',
     			'ajaxOptions': {
+    				'dataType': 'json',
     				'data':[]
     			}
     		}
@@ -29,15 +35,35 @@
     		'cancelLabel':'Cancel',
     		'ajax':false,
     		'ajaxOptions': {
+    			'dataType': 'json',
     			'context': null,
     		}
     	},
     	'button': {
     		'onClick':null,
-    		'binder':'live'
+    		'binder':'bind' /* bind, "on", or live */
     	}
     },
-
+	_setForm: function() {
+    	var self = this;
+		
+		if (this.options.form.ajax) {
+			if (!self.options.form.ajaxOptions.context) {
+				self.options.form.ajaxOptions.context = $("#"+ self.options.dialog.id);
+			}
+			$("#"+self.options.dialog.id + " #"+self.options.form.id).bind('submit', function(event){
+				$("#"+self.options.dialog.id).dialog("close");
+				self.options.form.ajaxOptions.success = function(result) {
+					if (result.formError) {
+						$("#"+ self.options.dialog.id).data('popup-error', result.formError);
+						$("#"+ self.options.dialog.id).dialog("open");
+					}
+				}
+				$(this).ajaxSubmit(self.options.form.ajaxOptions);
+				return false;
+			});
+		}
+	},
     _create: function(){
     	var self = this;
     	
@@ -61,23 +87,6 @@
 		if (this.options.form.id) {
 			d.buttons = {};
 				
-			if (this.options.form.ajax) {
-				if (!self.options.form.ajaxOptions.context) {
-					self.options.form.ajaxOptions.context = $("#"+ self.options.dialog.id);
-				}
-				$("#"+self.options.form.id).live('submit', function(){
-					$("#"+self.options.form.id).dialog("close");
-					self.options.form.ajaxOptions.success = function(result) {
-						if (result.formError) {
-							$("#"+ self.options.dialog.id).data('popup-error', result.formError);
-							$("#"+ self.options.dialog.id).dialog("open");
-						}
-					}
-					$(this).ajaxSubmit(self.options.form.ajaxOptions);
-					return false;
-				});
-			}
-			
 			d.buttons[this.options.form.submitLabel] = function () {
 				$("#"+self.options.form.id).submit();
 				$(this).dialog("close");
@@ -91,7 +100,10 @@
 			}
 		}
     	$("#"+ this.options.dialog.id).dialog(d);
-		this.element.click(function(){
+    	
+    	/* Bind Button */
+    	
+		$('#'+this.element.attr("id"))[self.options.button.binder]("click", function(){
 			if(self.options.dialog.content.url != undefined && !(self.options.dialog.content.loadOnce && $("#"+ self.options.dialog.id).data('loaded'))) {
 				var url = self.options.dialog.content.url;
 				if (url == true && self.element.attr("href") != undefined) {
@@ -99,11 +111,22 @@
 				}
 				$("#"+ self.options.dialog.id).data('loaded', true);
 				self.options.dialog.content.ajaxOptions.success = function(data) {
-					$("#"+ self.options.dialog.id).html(data.content);
+					if (data.error) {
+						$("#"+ self.options.dialog.id).dialog("close");
+					} else {
+						$("#"+ self.options.dialog.id).html(data.content);
+						self._setForm();
+					}
 				};
 				$("#"+ self.options.dialog.id).html(self.options.dialog.content.loadingMessage);
 				$.ajax(url, self.options.dialog.content.ajaxOptions);
+			} else if(self.options.dialog.content.url == undefined) {
+				if(!$("#"+ self.options.dialog.id).data('loaded')) {
+					$("#"+ self.options.dialog.id).data('loaded', true);
+					self._setForm();
+				}
 			}
+			
 			$("#"+ self.options.dialog.id).dialog("open");
 			return false;
 		});
