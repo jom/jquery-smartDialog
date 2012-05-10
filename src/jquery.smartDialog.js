@@ -46,7 +46,15 @@
     },
 	_setForm: function() {
     	var self = this;
-		
+		$("#"+self.options.dialog.id + " form input").keypress(function (e) {
+			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				$("#"+ self.options.dialog.id +" ~ .ui-dialog-buttonpane button").first().click();
+				return false;
+			} else {
+				return true;
+			}
+		});
+
 		if (this.options.form.ajax) {
 			if (!self.options.form.ajaxOptions.context) {
 				self.options.form.ajaxOptions.context = $("#"+ self.options.dialog.id);
@@ -67,7 +75,7 @@
 	},
     _create: function(){
     	var self = this;
-    	
+
     	var d = jQuery.extend(true, {}, this.options.dialog);
     	d.open = function () {
     		if($(this).data("popup-status")) {
@@ -87,23 +95,23 @@
     	}
 		if (this.options.form.id) {
 			d.buttons = {};
-				
+
 			d.buttons[this.options.form.submitLabel] = function () {
 				$("#"+self.options.form.id).submit();
 				$(this).dialog("close");
 			}
 			d.buttons[this.options.form.cancelLabel] = function () {
 				if($("#"+self.options.form.id)[0] != undefined){
-					$("#"+self.options.form.id)[0].reset(); 
-				} 
+					$("#"+self.options.form.id)[0].reset();
+				}
 				$("#"+self.options.form.id).find(".error_box").remove();
 				$(this).dialog("close");
 			}
 		}
     	$("#"+ this.options.dialog.id).dialog(d);
-    	
+
     	/* Bind Button */
-    	
+
 		$(this.element)[self.options.button.binder]("click", function(event){
 			if(self.options.dialog.content.url != undefined && !(self.options.dialog.content.loadOnce && $("#"+ self.options.dialog.id).data('loaded'))) {
 				var url = self.options.dialog.content.url;
@@ -118,9 +126,11 @@
 						$("#"+ self.options.dialog.id).html(data.content);
 						$(document).trigger('prepare', "#"+ self.options.dialog.id);
 						self._setForm();
+						$("#"+ self.options.dialog.id +" ~ .ui-dialog-buttonpane button").button("enable");
 					}
 				};
 				$("#"+ self.options.dialog.id).html(self.options.dialog.content.loadingMessage);
+				$("#"+ self.options.dialog.id +" ~ .ui-dialog-buttonpane button").button("disable");
 				$.ajax(url, self.options.dialog.content.ajaxOptions);
 			} else if(self.options.dialog.content.url == undefined) {
 				if(!$("#"+ self.options.dialog.id).data('loaded')) {
@@ -128,7 +138,7 @@
 					self._setForm();
 				}
 			}
-			
+
 			$("#"+ self.options.dialog.id).dialog("open");
 			event.stopPropagation();
 			return false;
