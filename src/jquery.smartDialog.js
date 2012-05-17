@@ -46,8 +46,9 @@
     },
 	_setForm: function() {
     	var self = this;
-		$("#"+self.options.dialog.id + " form input").keypress(function (e) {
+		$("#"+self.options.dialog.id + " form input:not(.noEnterSubmit)").keypress(function (e) {
 			if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+				console.log("oops");
 				$("#"+ self.options.dialog.id +" ~ .ui-dialog-buttonpane button").first().click();
 				return false;
 			} else {
