@@ -36,7 +36,7 @@
     		'ajax':false,
     		'ajaxOptions': {
     			'dataType': 'json',
-    			'context': null,
+    			'context': null
     		}
     	},
     	'button': {
@@ -144,7 +144,7 @@
 			event.stopPropagation();
 			return false;
 		});
-    },
+    }
 
   });
 })(jQuery);
