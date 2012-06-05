@@ -111,7 +111,6 @@
     	$("#"+ this.options.dialog.id).dialog(d);
 
     	/* Bind Button */
-
 		$(this.element)[self.options.button.binder]("click", function(event){
 			if(self.options.dialog.content.url != undefined && !(self.options.dialog.content.loadOnce && $("#"+ self.options.dialog.id).data('loaded'))) {
 				var url = self.options.dialog.content.url;
@@ -128,6 +127,9 @@
 						self._setForm();
 						$("#"+ self.options.dialog.id +" ~ .ui-dialog-buttonpane button").button("enable");
 					}
+				};
+				self.options.dialog.content.ajaxOptions.error = function(data) {
+					$("#"+ self.options.dialog.id).dialog("close");
 				};
 				$("#"+ self.options.dialog.id).html(self.options.dialog.content.loadingMessage);
 				$("#"+ self.options.dialog.id +" ~ .ui-dialog-buttonpane button").button("disable");
