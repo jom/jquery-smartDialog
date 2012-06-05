@@ -36,7 +36,20 @@
     		'ajax':false,
     		'ajaxOptions': {
     			'dataType': 'json',
-    			'context': null
+    			'context': null,
+    			'uploadProgress': function(options, xhr, event, position, total, percent) {
+    				if (options.notify && options.notifyContainer) {
+			        	var m = options.notifyContainer.notify("get", xhr.uniqueID);
+			        	if (m) {
+			        		var target = m.find('p.with-icon');
+							var progress = m.find('.ui-notify-progress').first();
+							if (progress.length === 0) {
+								progress = $('<span class="ui-notify-progress" />').appendTo(target);
+							}
+							progress.html(percent +"%");
+						}
+					}
+				}
     		}
     	},
     	'button': {
