@@ -33,6 +33,7 @@
     		'id':false,
     		'submitLabel':'Submit',
     		'cancelLabel':'Cancel',
+    		'onCancel': function() {},
     		'ajax':false,
     		'ajaxOptions': {
     			'dataType': 'json',
@@ -117,6 +118,7 @@
 				if($("#"+self.options.form.id)[0] != undefined){
 					$("#"+self.options.form.id)[0].reset();
 				}
+				self.options.form.onCancel();
 				$("#"+self.options.form.id).find(".error_box").remove();
 				$(this).dialog("close");
 			}
