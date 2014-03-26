@@ -126,7 +126,7 @@
     	$("#"+ this.options.dialog.id).dialog(d);
 
     	/* Bind Button */
-		$(this.element)[self.options.button.binder]("click", function(event){
+    	var buttonFunction = function(event){
 			if(self.options.dialog.content.url != undefined && !(self.options.dialog.content.loadOnce && $("#"+ self.options.dialog.id).data('loaded'))) {
 				var url = self.options.dialog.content.url;
 				if (url == true && self.element.attr("href") != undefined) {
@@ -159,7 +159,8 @@
 			$("#"+ self.options.dialog.id).dialog("open");
 			event.stopPropagation();
 			return false;
-		});
+		};
+    	$(this.element).on("click", buttonFunction);
     }
 
   });
